@@ -4,25 +4,30 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
-public class FireMan extends JComponent implements KeyListener
+public class FireMan extends JComponent implements KeyListener, ActionListener
 {
+    private static final int MAX_WATER = 200;
+    private static final int MAX_FIREMAN = 20;
 
-    private boolean[] fireManAwake = new boolean[20];
-    private int[] fireManX = new int[20];
-    private int[] waterX = new int[200];
-    private int[] waterY = new int[200];
+    private boolean[] fireManAwake = new boolean[MAX_FIREMAN];
+    private int[] fireManX = new int[MAX_FIREMAN];
+    private int[] waterX = new int[MAX_WATER];
+    private int[] waterY = new int[MAX_WATER];
     private Image sleepingFireman;
     private Image awakeFireman;
     private Image bucket;
     private Image water;
-    private boolean[] waterVisible = new boolean[200];
+    private boolean[] waterVisible = new boolean[MAX_WATER];
 
     public static void main(String[] args) throws IOException
     {
@@ -34,19 +39,22 @@ public class FireMan extends JComponent implements KeyListener
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Timer t = new Timer(100, game);
+        t.start();
 
     }
 
     public FireMan() throws IOException
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < MAX_FIREMAN; i++)
         {
             fireManAwake[i] = false;
             fireManX[i] = i * 30;
         }
 
         fireManAwake[0] = true;
-        for (int i = 0; i < 200; i++)
+        fireManAwake[5] = true;
+        for (int i = 0; i < MAX_WATER; i++)
         {
             waterVisible[i] = false;
 
@@ -62,7 +70,7 @@ public class FireMan extends JComponent implements KeyListener
     @Override
     protected void paintComponent(Graphics g)
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < MAX_FIREMAN; i++)
         {
             if (fireManAwake[i])
             {
@@ -73,7 +81,7 @@ public class FireMan extends JComponent implements KeyListener
             }
         }
 
-        for (int i = 0; i < 200; i++)
+        for (int i = 0; i < MAX_WATER; i++)
         {
             if (waterVisible[i])
             {
@@ -100,7 +108,7 @@ public class FireMan extends JComponent implements KeyListener
     {
         if (ke.getKeyCode() == KeyEvent.VK_SPACE)
         {
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < MAX_FIREMAN; i++)
             {
                 if (fireManAwake[i])
                 {
@@ -111,11 +119,46 @@ public class FireMan extends JComponent implements KeyListener
 
             }
         }
+        
+        if(ke.getKeyCode() == KeyEvent.VK_LEFT)
+        {
+            for( int i =0; i <MAX_FIREMAN; i++)
+            {
+                if(fireManAwake[i])
+                {
+                    fireManX[i] -= 2;
+                }
+            }
+        }
+        if(ke.getKeyCode() == KeyEvent.VK_RIGHT)
+        {
+             for( int i =0; i <MAX_FIREMAN; i++)
+            {
+                if(fireManAwake[i])
+                {
+                    fireManX[i] += 2;
+                }
+            }
+        }
+            
         repaint();
     }
 
     @Override
     public void keyReleased(KeyEvent ke)
     {
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ae)
+    {
+        for(int i = 0; i < MAX_WATER; i++)
+        {
+            if(waterVisible[i])
+            {
+                waterY[i] += 5;
+            }
+        }
+        repaint();
     }
 }
