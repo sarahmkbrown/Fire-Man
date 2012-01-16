@@ -16,10 +16,14 @@ import javax.swing.Timer;
 
 public class FireMan extends JComponent implements KeyListener, ActionListener
 {
+    public static final int AWAKE_FIREMAN_Y = 0;
+    public static final int SLEEPING_FIREMAN_Y = 600 - 30;
     private static final int MAX_WATER = 200;
-    private static final int MAX_FIREMAN = 20;
+    private static final int MAX_FIREMAN = 30;
+    private static final int WATER_SIZE = 30;
+    private static final int FIREMAN_SIZE = 30;
     private static final int HEIGHT = 600;
-    private static final int WIDTH = 800;
+    private static final int WIDTH = MAX_FIREMAN * FIREMAN_SIZE;
 
     private boolean[] fireManAwake = new boolean[MAX_FIREMAN];
     private int[] fireManX = new int[MAX_FIREMAN];
@@ -54,8 +58,7 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
             fireManX[i] = i * 30;
         }
 
-        fireManAwake[0] = true;
-        fireManAwake[5] = true;
+        fireManAwake[MAX_FIREMAN/2] = true;
         for (int i = 0; i < MAX_WATER; i++)
         {
             waterVisible[i] = false;
@@ -76,10 +79,10 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
         {
             if (fireManAwake[i])
             {
-                g.drawImage(awakeFireman, fireManX[i], 0, 30, 30, null);
+                g.drawImage(awakeFireman, fireManX[i], AWAKE_FIREMAN_Y, 30, 30, null);
             } else
             {
-                g.drawImage(sleepingFireman, fireManX[i], 600 - 30, 30, 30, null);
+                g.drawImage(sleepingFireman, fireManX[i], SLEEPING_FIREMAN_Y, 30, 30, null);
             }
         }
 
@@ -182,6 +185,18 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
             if(waterVisible[i])
             {
                 waterY[i] += 5;
+                for (int j = 0; j < MAX_FIREMAN; j++)
+                {
+                   if(fireManX[j] < waterX[i] + WATER_SIZE 
+                           && fireManX[j] + FIREMAN_SIZE >waterX[i]
+                           && SLEEPING_FIREMAN_Y < waterY[i] + WATER_SIZE
+                           && SLEEPING_FIREMAN_Y + FIREMAN_SIZE> waterY[i]
+                     )
+                   {
+                       fireManAwake[j] = true;
+                   }
+                    
+                }
                 
                 if(waterY[i] > HEIGHT)
                 {
@@ -189,6 +204,7 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
                 }
             }
         }
+        
         repaint();
     }
 }
