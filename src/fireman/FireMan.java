@@ -224,9 +224,11 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
                     if (birdX[i] < waterX[j] + WATER_SIZE
                             &&birdX[i] + birdSize[i] > waterX[j]
                             && birdY[i] < waterY[j] + WATER_SIZE
-                            && birdY[i] + birdSize[i] > waterY[j])
+                            && birdY[i] + birdSize[i] > waterY[j]
+                            && waterVisible[j])
                     {
                         waterVisible[j] = false;
+                        birdSize[i] += 15;
                     }
                 }
                 if (birdX[i] > WIDTH) 
