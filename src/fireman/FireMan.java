@@ -18,6 +18,8 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
 {
     private static final int MAX_WATER = 200;
     private static final int MAX_FIREMAN = 20;
+    private static final int HEIGHT = 600;
+    private static final int WIDTH = 800;
 
     private boolean[] fireManAwake = new boolean[MAX_FIREMAN];
     private int[] fireManX = new int[MAX_FIREMAN];
@@ -95,7 +97,7 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
     @Override
     public Dimension getPreferredSize()
     {
-        return new Dimension(800, 600);
+        return new Dimension(WIDTH , HEIGHT);
     }
 
     @Override
@@ -108,40 +110,63 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
     {
         if (ke.getKeyCode() == KeyEvent.VK_SPACE)
         {
-            for (int i = 0; i < MAX_FIREMAN; i++)
-            {
-                if (fireManAwake[i])
-                {
-                    waterVisible[i] = true;
-                    waterX[i] = fireManX[i];
-                    waterY[i] = 40;
-                }
-
-            }
+            pourWater();
         }
         
         if(ke.getKeyCode() == KeyEvent.VK_LEFT)
         {
-            for( int i =0; i <MAX_FIREMAN; i++)
-            {
-                if(fireManAwake[i])
-                {
-                    fireManX[i] -= 2;
-                }
-            }
+            moveFiremenLeft();
         }
         if(ke.getKeyCode() == KeyEvent.VK_RIGHT)
         {
-             for( int i =0; i <MAX_FIREMAN; i++)
-            {
-                if(fireManAwake[i])
-                {
-                    fireManX[i] += 2;
-                }
-            }
+            moveFiremenRight();
         }
             
         repaint();
+    }
+
+    private void moveFiremenRight()
+    {
+        for( int i =0; i <MAX_FIREMAN; i++)
+       {
+           if(fireManAwake[i])
+           {
+               fireManX[i] += 2;
+           }
+       }
+    }
+
+    private void moveFiremenLeft()
+    {
+        for( int i =0; i <MAX_FIREMAN; i++)
+        {
+            if(fireManAwake[i])
+            {
+                fireManX[i] -= 2;
+            }
+        }
+    }
+
+    private void pourWater()
+    {
+        for (int i = 0; i < MAX_FIREMAN; i++)
+        {
+            if (fireManAwake[i])
+            {
+                for( int j= 0; j <MAX_WATER; j++)
+                {
+                    if(waterVisible[j] == false)
+                    {
+                        waterVisible[j] = true;
+                        waterX[j] = fireManX[i];
+                        waterY[j] = 40;
+                        break;
+                    }
+                }
+               
+            }
+
+        }
     }
 
     @Override
@@ -157,6 +182,11 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
             if(waterVisible[i])
             {
                 waterY[i] += 5;
+                
+                if(waterY[i] > HEIGHT)
+                {
+                    waterVisible[i] = false;
+                }
             }
         }
         repaint();
