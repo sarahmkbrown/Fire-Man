@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -24,7 +25,9 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
     private static final int FIREMAN_SIZE = 30;
     private static final int HEIGHT = 600;
     private static final int WIDTH = MAX_FIREMAN * FIREMAN_SIZE;
+    private static final int MAX_BIRDS = 5;
 
+    private Random r = new Random();
     private boolean[] fireManAwake = new boolean[MAX_FIREMAN];
     private int[] fireManX = new int[MAX_FIREMAN];
     private int[] waterX = new int[MAX_WATER];
@@ -34,6 +37,10 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
     private Image bucket;
     private Image water;
     private boolean[] waterVisible = new boolean[MAX_WATER];
+    private int[] birdX = new int[MAX_BIRDS];
+    private int[] birdY = new int[MAX_BIRDS];
+    private int[] birdSize = new int[MAX_BIRDS];
+    private boolean[] birdVisible = new boolean[MAX_BIRDS];
 
     public static void main(String[] args) throws IOException
     {
@@ -64,6 +71,14 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
             waterVisible[i] = false;
 
         }
+        for (int i = 0; i < MAX_BIRDS; i++)
+        {
+           birdVisible[i] = false;
+        }
+        birdVisible[0] = true;
+        birdX[0] = 0;
+        birdY[0] = HEIGHT /2;
+        birdSize[0] = 25; 
 
         sleepingFireman = ImageIO.read(getClass().getResource("sleeping.jpg"));
         awakeFireman = ImageIO.read(getClass().getResource("head.jpg"));
@@ -94,6 +109,17 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
                 g.fillRect(waterX[i], waterY[i], 30, 30);
             }
 
+        }
+        
+        for(int i = 0; i < MAX_BIRDS; i++)
+        {
+            if(birdVisible[i])
+            {
+                g.setColor(Color.MAGENTA);
+                g.fillRect(birdX[i], birdY[i], birdSize[i], birdSize[i]);
+  
+                    
+            }
         }
     }
 
@@ -180,6 +206,41 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
     @Override
     public void actionPerformed(ActionEvent ae)
     {
+        updateWater();
+        updateBirds();
+        makeNewBirds();
+        
+        repaint();
+    }
+
+    private void updateBirds()
+    {
+        for (int i = 0; i < MAX_BIRDS; i++)
+        {
+            if(birdVisible[i])
+            {
+                birdX[i] += 20;
+                for(int j = 0; j < MAX_WATER; j++) {
+                    if (birdX[i] < waterX[j] + WATER_SIZE
+                            &&birdX[i] + birdSize[i] > waterX[j]
+                            && birdY[i] < waterY[j] + WATER_SIZE
+                            && birdY[i] + birdSize[i] > waterY[j])
+                    {
+                        waterVisible[j] = false;
+                    }
+                }
+                if (birdX[i] > WIDTH) 
+                {
+                    birdVisible[i] = false;
+                }
+            }
+            
+            
+        }
+    }
+
+    private void updateWater()
+    {
         for(int i = 0; i < MAX_WATER; i++)
         {
             if(waterVisible[i])
@@ -204,7 +265,25 @@ public class FireMan extends JComponent implements KeyListener, ActionListener
                 }
             }
         }
-        
-        repaint();
+    }
+
+    private void makeNewBirds()
+    {
+        int p = r.nextInt(100);
+        if(p < 20)
+        {
+            for( int i = 0; i< MAX_BIRDS; i++)
+            {
+                if(birdVisible[i] == false)
+                {
+                    birdVisible[i] = true;
+                    birdSize[i] = r.nextInt(45)+ 5;
+                    birdX[i] = -birdSize[i];
+                    birdY[i] = r.nextInt(HEIGHT - FIREMAN_SIZE - birdSize[i] - FIREMAN_SIZE  ) + FIREMAN_SIZE;
+                    break;
+                }
+            }
+
+        }
     }
 }
